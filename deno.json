@@ -5,7 +5,8 @@
     "release": "deno eval 'import \"$live/scripts/release.ts\"'",
     "start": "deno eval 'import \"$live/scripts/apps/bundle.ts\"'",
     "link": "deno eval 'import \"$live/scripts/apps/link.ts\"'",
-    "unlink": "deno eval 'import \"$live/scripts/apps/unlink.ts\"'"
+    "unlink": "deno eval 'import \"$live/scripts/apps/unlink.ts\"'",
+    "update" : "deno eval 'import \"$live/scripts/update.ts\"'"
   },
   "githooks": {
     "pre-commit": "check"
