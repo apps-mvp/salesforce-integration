@@ -1,4 +1,4 @@
-import { slugify } from "./slugfy.ts";
+import { slugfy } from "./utils.ts";
 import type {
   ImageGroups,
   ProductBaseSalesforce,
@@ -154,7 +154,7 @@ const getProductURL = (
   productName: string,
   id: string
 ): URL => {
-  const canonicalUrl = new URL(`/${slugify(productName)}/salesforce`, origin);
+  const canonicalUrl = new URL(`/${slugfy(productName)}/salesforce`, origin);
   canonicalUrl.searchParams.set("id", id);
   return canonicalUrl;
 };

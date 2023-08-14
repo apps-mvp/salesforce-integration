@@ -1,5 +1,5 @@
 import { Account } from "./types.ts";
-import { stringfyParams } from "./stringfy.ts";
+import { stringfyParams } from "./utils.ts";
 import { PDPParams, ProductSearchParams } from "./types.ts";
 export const paths = ({
   shortCode,

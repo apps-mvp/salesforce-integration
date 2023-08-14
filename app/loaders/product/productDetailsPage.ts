@@ -1,7 +1,6 @@
 import { AppContext } from "../../mod.ts";
 import { paths } from "../../utils/paths.ts";
-import { slugify, getSlugFromURL } from "../../utils/slugfy.ts";
-import { ProductBaseSalesforce } from "../../utils/types.ts";
+import { ProductBaseSalesforce, ProductSearch } from "../../utils/types.ts";
 import { getCookies } from "std/http/mod.ts";
 import { fetchAPI } from "deco-sites/std/utils/fetch.ts";
 import { toProductPage } from "../../utils/transform.ts";
@@ -23,23 +22,47 @@ export default async function loader(
 ): Promise<null | ProductDetailsPage> {
   const url = new URL(req.url);
 
-  /* const token = getCookies(req.headers)[`token_${ctx.siteId}`]; */
   const token = getCookies(req.headers)[`token_${ctx.siteId}`];
-  const urlSlug = getSlugFromURL(url);
+  const { slug } = props;
 
-  if (!urlSlug || !token) return null;
+  if (!slug || !token) return null;
 
   const id = url.searchParams.get("id");
+
   if (!id) {
-    const result = await productSearch(token, ctx, slugify(urlSlug));
-    if (!result) return null;
+    const getProductBySlug = await fetchProduct<ProductSearch>(
+      paths(
+        ctx
+      ).search.shopper_search.v1.organizations._organizationId.product_search.q(
+        slug.replace(/-/g, " "),
+        {
+          limit: 1,
+          refine: {
+            htype: "master",
+          },
+        }
+      ),
+      token
+    );
+
+    if (getProductBySlug.limit == 0) return null;
+
+    const getProductById = await fetchProduct<ProductBaseSalesforce>(
+      paths(
+        ctx
+      ).product.shopper_products.v1.organizations._organizationId.products.productId(
+        getProductBySlug.hits[0].productId
+      ),
+      token
+    );
+
     return {
       "@type": "ProductDetailsPage",
-      ...toProductPage(result, url.origin),
+      ...toProductPage(getProductById, url.origin),
     };
   }
 
-  const result = await fetchProduct(
+  const getProductById = await fetchProduct<ProductBaseSalesforce>(
     paths(
       ctx
     ).product.shopper_products.v1.organizations._organizationId.products.productId(
@@ -50,44 +73,15 @@ export default async function loader(
 
   return {
     "@type": "ProductDetailsPage",
-    ...toProductPage(result, url.origin),
+    ...toProductPage(getProductById, url.origin),
   };
 }
 
-const fetchProduct = (path: string, token: string) => {
-  return fetchAPI(path, {
+const fetchProduct = <T>(path: string, token: string) => {
+  return fetchAPI<T>(path, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-};
-
-const productSearch = async (
-  token: string,
-  ctx: AppContext,
-  slug: string
-): Promise<ProductBaseSalesforce | null> => {
-  const productSearchPath = paths(
-    ctx
-  ).search.shopper_search.v1.organizations._organizationId.product_search.q(
-    slug.replace(/-/g, " "),
-    {
-      limit: 1,
-    }
-  );
-  const productSearch = await fetchProduct(productSearchPath, token);
-
-  if (productSearch.limit == 0) return null;
-
-  const getProduct = (await fetchProduct(
-    paths(
-      ctx
-    ).product.shopper_products.v1.organizations._organizationId.products.productId(
-      productSearch.hits[0].productId
-    ),
-    token
-  )) as ProductBaseSalesforce;
-
-  return getProduct;
 };

@@ -79,7 +79,7 @@ export interface Master {
 }
 
 export interface Type {
-  master?: boolean;
+  master: boolean;
   bundle?: boolean;
   variant?: boolean;
   item?: boolean;
@@ -252,6 +252,72 @@ export interface Account {
   locale: string;
 }
 
-export interface Props {
-  slug: string;
+export interface ProductSearch {
+  limit: number;
+  hits: ProductSeachHits[];
+  query: string;
+  refinements: ProductSearchRefinments[];
+  searchPhraseSuggestions: ProductSearchSuggestions;
+  sortingOptions: SortingOptions[];
+  offset: number;
+  total: number;
+}
+
+export interface ProductSeachHits {
+  currency: "USD" | "BRL";
+  hitType: "product" | "master" | "set" | "bundle";
+  image: Images;
+  orderable: boolean;
+  price: number;
+  pricePerUnit: number;
+  productId: string;
+  productName: string;
+  productType: Type;
+  representedProduct?: RepresentedProduct;
+  representedProducts: RepresentedProduct[];
+  variationAttributes: VariationAttributes[];
+}
+
+export interface RepresentedProduct {
+  id: string;
+}
+
+export interface ProductSearchRefinments {
+  attributeId: string;
+  label: string;
+  values?: ProductSearchRefinmentsValues[];
+}
+
+export interface ProductSearchRefinmentsValues {
+  hitCount: number;
+  label: string;
+  presentationId?: string;
+  value: string;
+}
+
+export interface ProductSearchSuggestions {
+  suggestedPhrases: SuggestedPhrases[];
+  suggestedTerms: SuggestedTerms[];
+}
+
+export interface SuggestedPhrases {
+  exactMatch: boolean;
+  phrase: string;
+}
+
+export interface SuggestedTerms {
+  originalTerm: string;
+  terms: SuggestedTermsValues[];
+}
+
+export interface SuggestedTermsValues {
+  completed: boolean;
+  corrected: boolean;
+  exactMatch: boolean;
+  value: string;
+}
+
+export interface SortingOptions {
+  id: string;
+  label: string;
 }
