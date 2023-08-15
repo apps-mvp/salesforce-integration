@@ -18,12 +18,20 @@ import type {
 export const toProductPage = (
   product: ProductBaseSalesforce,
   baseURL: string
-): Omit<ProductDetailsPage, "seo"> => {
-  return {
-    "@type": "ProductDetailsPage",
-    breadcrumbList: toBreadcrumbList(product, baseURL),
-    product: toProduct(product, baseURL),
-  };
+): ProductDetailsPage => ({
+  "@type": "ProductDetailsPage",
+  breadcrumbList: toBreadcrumbList(product, baseURL),
+  product: toProduct(product, baseURL),
+  seo: {
+    title: toSEOTitle(product),
+    description: product.pageDescription ?? product.shortDescription,
+    canonical: getProductURL(baseURL, product.name, product.id).href,
+  },
+});
+
+const toSEOTitle = ({ name, pageTitle, brand }: ProductBaseSalesforce) => {
+  const SEOTitle = pageTitle ?? name;
+  return brand ? `${SEOTitle}, ${brand}` : SEOTitle;
 };
 
 const toBreadcrumbList = (
@@ -154,7 +162,7 @@ const getProductURL = (
   productName: string,
   id: string
 ): URL => {
-  const canonicalUrl = new URL(`/${slugfy(productName)}/salesforce`, origin);
+  const canonicalUrl = new URL(`/${slugfy(productName)}/p`, origin);
   canonicalUrl.searchParams.set("id", id);
   return canonicalUrl;
 };

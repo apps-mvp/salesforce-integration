@@ -12,7 +12,7 @@ export interface Props {
 }
 
 /**
- * @type Salesforce Product Details Page
+ * @title Salesforce Product Details Page
  * @description works on routes /:slug/p?id=optionalProductId
  */
 export default async function loader(

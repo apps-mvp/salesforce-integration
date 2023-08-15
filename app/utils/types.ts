@@ -143,10 +143,12 @@ export interface PDPParams {
 
 export interface ProductSearchParams {
   /**
-   * @description Refine search Params. The refinements can be a collection of custom defined attributes IDs and the system defined attributes IDs but the search can only accept a total of 9 refinements at a time
+   * @title Filters
+   * @description The filters can be a collection of custom defined attributes IDs and the system defined attributes IDs but the search can only accept a total of 9 refinements at a time
    */
   refine?: {
     /**
+     * @title Category ID
      * @description Allows refinement per single category ID. Multiple category ids are not supported.
      */
     cgid?: string;
