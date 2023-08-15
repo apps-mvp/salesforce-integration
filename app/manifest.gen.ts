@@ -3,11 +3,13 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $$$0 from "./loaders/bin.ts";
+import * as $$$1 from "./loaders/product/productDetailsPage.ts";
 import { AppManifest } from "$live/types.ts";
 
 const manifest = {
   "loaders": {
     "salesforce-integration/loaders/bin.ts": $$$0,
+    "salesforce-integration/loaders/product/productDetailsPage.ts": $$$1,
   },
 };
 
