@@ -4,6 +4,8 @@ import type {
   ProductBaseSalesforce,
   Variants,
   VariationAttributes,
+  ProductSearch,
+  Inventory,
 } from "./types.ts";
 import type {
   PropertyValue,
@@ -28,6 +30,47 @@ export const toProductPage = (
     canonical: getProductURL(baseURL, product.name, product.id).href,
   },
 });
+
+export const toProductList = (
+  products: ProductSearch,
+  baseURL: string
+): Product[] => {
+  return products.hits.map(
+    ({
+      productId,
+      productName,
+      variationAttributes,
+      image,
+      currency,
+      price,
+      orderable,
+    }) => {
+      const offers = toOffer(price, orderable, orderable ? 10 : 0);
+      return {
+        "@type": "Product",
+        id: productId,
+        url: getProductURL(baseURL, productName, productId).href,
+        name: productName,
+        additionalProperty: toAdditionalProperties(variationAttributes),
+        image: [
+          {
+            "@type": "ImageObject",
+            alternateName: image.alt,
+            url: image.link,
+          },
+        ],
+        offers: {
+          "@type": "AggregateOffer",
+          priceCurrency: currency,
+          highPrice: price,
+          lowPrice: price,
+          offerCount: offers.length,
+          offers,
+        },
+      };
+    }
+  );
+};
 
 const toSEOTitle = ({ name, pageTitle, brand }: ProductBaseSalesforce) => {
   const SEOTitle = pageTitle ?? name;
@@ -70,14 +113,22 @@ const toProduct = (
   product: ProductBaseSalesforce,
   baseURL: string
 ): Product => {
-  const { primaryCategoryId, id, name, pageDescription, brand, imageGroups } =
-    product;
+  const {
+    primaryCategoryId,
+    id,
+    name,
+    pageDescription,
+    brand,
+    imageGroups,
+    price,
+    inventory,
+  } = product;
 
   const isVariantOf = product.variants
     ? toVariantProduct(product, product.variants, baseURL)
     : undefined;
 
-  const offers = toOffer(product);
+  const offers = toOffer(price, inventory.orderable, inventory.stockLevel);
   return {
     "@type": "Product",
     category: toCategory(primaryCategoryId),
@@ -87,7 +138,10 @@ const toProduct = (
     description: pageDescription,
     brand,
     gtin: id,
-    additionalProperty: toAdditionalProperties(product),
+    additionalProperty: toAdditionalProperties(
+      product.variationAttributes,
+      product
+    ),
     isVariantOf,
     image: imageGroups
       .filter((obj) => !obj.variationAttributes && obj.viewType === "large")
@@ -168,10 +222,11 @@ const getProductURL = (
 };
 
 const toAdditionalProperties = (
-  product: ProductBaseSalesforce
+  variationAttributes: VariationAttributes[] | undefined,
+  product?: ProductBaseSalesforce
 ): PropertyValue[] => {
   const propietiesFromVariationAttr =
-    product.variationAttributes?.flatMap(({ name, values }) =>
+    variationAttributes?.flatMap(({ name, values }) =>
       values.map(
         (value) =>
           ({
@@ -183,8 +238,12 @@ const toAdditionalProperties = (
       )
     ) ?? [];
 
-  const proprietiesFromExtraAttr = toExtraAdditionalProperties(product);
-  return propietiesFromVariationAttr.concat(proprietiesFromExtraAttr);
+  if (product) {
+    const proprietiesFromExtraAttr = toExtraAdditionalProperties(product);
+    return propietiesFromVariationAttr.concat(proprietiesFromExtraAttr);
+  }
+
+  return propietiesFromVariationAttr;
 };
 
 const toExtraAdditionalProperties = (
@@ -247,11 +306,15 @@ const toVariantImages = (
       : []
   );
 
-const toOffer = ({ price, inventory }: ProductBaseSalesforce): Offer => [
+const toOffer = (
+  price: number,
+  orderable: boolean,
+  stockLevel: number
+): Offer => [
   {
     "@type": "Offer",
     price: price,
-    inventoryLevel: { value: inventory.stockLevel },
+    inventoryLevel: { value: stockLevel },
     seller: "Salesforce",
     priceSpecification: [
       {
@@ -265,7 +328,7 @@ const toOffer = ({ price, inventory }: ProductBaseSalesforce): Offer => [
         price: price,
       },
     ],
-    availability: inventory.orderable
+    availability: orderable
       ? "https://schema.org/InStock"
       : "https://schema.org/OutOfStock",
   },

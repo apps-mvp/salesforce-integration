@@ -4,12 +4,14 @@
 
 import * as $$$0 from "./loaders/bin.ts";
 import * as $$$1 from "./loaders/product/productDetailsPage.ts";
+import * as $$$2 from "./loaders/product/productList.ts";
 import { AppManifest } from "$live/types.ts";
 
 const manifest = {
   "loaders": {
     "salesforce-integration/loaders/bin.ts": $$$0,
     "salesforce-integration/loaders/product/productDetailsPage.ts": $$$1,
+    "salesforce-integration/loaders/product/productList.ts": $$$2,
   },
 };
 
