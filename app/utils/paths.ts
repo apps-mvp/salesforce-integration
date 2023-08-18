@@ -11,7 +11,7 @@ export const paths = ({
   const base = `https://${shortCode}.api.commercecloud.salesforce.com`;
   const href = (path: string, extraParams?: object) => {
     if (extraParams) {
-      path = path + stringfyParams(extraParams, true);
+      path = path + stringfyParams(extraParams);
     }
     return new URL(path, base).href;
   };

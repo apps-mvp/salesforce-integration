@@ -1,14 +1,18 @@
-import { ProductSearch } from "../../utils/types.ts";
+import {
+  ProductSearch,
+  ExtraRefineParams,
+  PricingRange,
+} from "../../utils/types.ts";
 import { AppContext } from "../../mod.ts";
 import { paths } from "../../utils/paths.ts";
 import { getCookies } from "std/http/mod.ts";
 import { fetchAPI } from "deco-sites/std/utils/fetch.ts";
 import type { Product } from "deco-sites/std/commerce/types.ts";
 import { toProductList } from "../../utils/transform.ts";
+import { toExtraRefineParams, toPriceRange } from "../../utils/utils.ts";
 
 /**
- * @title ShelfFilters
- *  @description Define what filters you´re gonna applicate in this shelf
+ * @title Salesforce - Product List
  */
 export interface Props {
   /**
@@ -19,15 +23,10 @@ export interface Props {
 
   /**
    * @title Category ID.
-   * @description Allows refinement per single category ID. Multiple category ids are not supported.
-   */
-  cgid?: string;
+   * @description Sort the categories and subcategories according to those created in the sales force. Example: men, clothes, suits
 
-  /**
-   * @description Allows refinement per single price range. Multiple price ranges are not supported. Example: (100..300) - Range by 100 to 300.
-   * @example (100..300)
    */
-  price?: string;
+  cgid?: Array<string>;
 
   /**
    * @title Promotion ID.
@@ -36,27 +35,42 @@ export interface Props {
   pmid?: string;
 
   /**
-   * @title Products color.
-   * @description Refinement color. Multiple values are supported by a subset of refinement attributes and can be provided by separating them using a pipe (URL encoded = "|") i.e. Ex: red|green|blue
-   * @example
+   * @description Allows refinement per single price range. Multiple price ranges are not supported.
    */
-  c_refinementColor?: string;
+  price?: PricingRange;
 
   /**
-   * @title Sort Id.
-   * @description The ID of the sorting option to sort the search hits. Ex: price-high-to-low, price-low-to-high.
+   * @title Extra Params.
+   * @description Define extra refinement params to the query. DO NOT EXCEED 5 EXTRA PARAMS.
+   * @max 5
    */
-  sort?: string;
+  extraParams: ExtraRefineParams[];
 
   /**
-   * @description Maximum records to retrieve per request, not to exceed 200. Defaults to 25.
+   * @title Sort.
    */
-  limit?: number;
+  sort?: Sort;
+
+  /**
+   * @description Maximum records to retrieve per request, not to exceed 50. Defaults to 25.
+   * @default 10
+   * @max 50
+   */
+  limit: number;
 }
 
+export type Sort =
+  | "price-high-to-low"
+  | "price-low-to-high"
+  | "product-name-ascending"
+  | "product-name-descending"
+  | "brand"
+  | "most-popular"
+  | "top-sellers"
+  | "";
+
 /**
- * @title Salesforce Shelf
- * @description Define several filters to the shelf
+ * @title Salesforce - Product List
  */
 export default async function loader(
   props: Props,
@@ -64,11 +78,13 @@ export default async function loader(
   ctx: AppContext
 ): Promise<null | Omit<Product[], "isVariantOf">> {
   const url = new URL(req.url);
-  const { cgid, price, pmid, c_refinementColor, sort, limit, q } = props;
+  const { cgid, pmid, sort, limit, q, price } = props;
 
-  const token = getCookies(req.headers)[`token_${ctx.siteId}`];
-
+  const token = getCookies(req.headers)[`token_${ctx.siteId}`]; 
+  
   if (!token) return null;
+
+  const extraRefineParams = toExtraRefineParams(props.extraParams);
   const getProductBySlug = await fetchProducts<ProductSearch>(
     paths(
       ctx
@@ -77,13 +93,11 @@ export default async function loader(
       {
         sort,
         limit,
-        refine: {
-          cgid,
-          price,
-          pmid,
-          c_refinementColor,
-          htype: "master|product",
-        },
+        refine_cgid: cgid?.join("-"),
+        refine_pmid: pmid,
+        refine_htype: "master|product",
+        refine_price: toPriceRange(price),
+        ...extraRefineParams,
       }
     ),
     token
@@ -91,7 +105,7 @@ export default async function loader(
 
   if (getProductBySlug.total == 0) return null;
 
-  return await toProductList(getProductBySlug, url.origin);
+  return toProductList(getProductBySlug, url.origin);
 }
 
 const fetchProducts = <T>(path: string, token: string): T => {

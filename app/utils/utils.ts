@@ -1,3 +1,5 @@
+import { ExtraRefineParams, PricingRange } from "./types.ts";
+
 export function slugfy(url: string) {
   return url
     .toString()
@@ -13,31 +15,46 @@ export function slugfy(url: string) {
     .replace(/\-\-+/g, "-");
 }
 
-export const stringfyParams = (
-  params?: object,
-  firstLevel?: boolean,
-  prevAttribute?: string
-): string => {
+export const stringfyParams = (params?: object): string => {
   if (!params || Object.keys(params).length == 0) {
     return "";
   }
 
-  const unifiedObject = Object.keys(params).map((prop: string) => {
-    const elementValue = params[prop as keyof object];
-    if (!elementValue) return null;
+  return (
+    "&" +
+    Object.keys(params)
+      .map((prop: string) => {
+        const elementValue = params[prop as keyof object];
+        if (!elementValue) return null;
 
-    if (typeof elementValue === "object") {
-      const nextLevelObj = stringfyParams(elementValue, false, prop);
-      return nextLevelObj;
-    }
+        return prop.startsWith("refine_")
+          ? "refine=" + prop.replace("refine_", "") + "=" + elementValue
+          : prop + "=" + elementValue;
+      })
+      .filter(Boolean)
+      .join("&")
+  );
+};
 
-    const returnObj = prevAttribute
-      ? prevAttribute + "=" + prop + "=" + elementValue
-      : prop + "=" + elementValue;
-    return returnObj;
-  });
-  const joinedObject = firstLevel
-    ? "&" + unifiedObject.filter(Boolean).join("&")
-    : unifiedObject.filter(Boolean).join("&");
-  return joinedObject;
+export const toExtraRefineParams = (extraParams: ExtraRefineParams[]) => {
+  const result = {};
+  for (const item of extraParams) {
+    result[`refine_${item.key}`] = item.value;
+  }
+  return result;
+};
+
+export const toPriceRange = (pricingRange: PricingRange | undefined) => {
+  if (
+    !pricingRange ||
+    typeof pricingRange.minValue == "string" ||
+    typeof pricingRange.maxValue == "string" ||
+    (typeof pricingRange.minValue == "undefined" &&
+      typeof pricingRange.maxValue == "undefined")
+  )
+    return undefined;
+
+  return `(${pricingRange.minValue ? Math.floor(pricingRange.minValue) : ""}..${
+    pricingRange.maxValue ? Math.floor(pricingRange.maxValue) : ""
+  })`;
 };
