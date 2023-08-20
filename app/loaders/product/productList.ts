@@ -1,6 +1,6 @@
 import {
   ProductSearch,
-  ExtraRefineParams,
+  RefineParams,
   PricingRange,
 } from "../../utils/types.ts";
 import { AppContext } from "../../mod.ts";
@@ -9,7 +9,7 @@ import { getCookies } from "std/http/mod.ts";
 import { fetchAPI } from "deco-sites/std/utils/fetch.ts";
 import type { Product } from "deco-sites/std/commerce/types.ts";
 import { toProductList } from "../../utils/transform.ts";
-import { toExtraRefineParams, toPriceRange } from "../../utils/utils.ts";
+import { toRefineParams, toPriceRange } from "../../utils/utils.ts";
 
 /**
  * @title Salesforce - Product List
@@ -19,14 +19,14 @@ export interface Props {
    * @title Query
    * @description Keyphase of the collection.
    */
-  q: string;
+  q?: string;
 
   /**
    * @title Category ID.
    * @description Sort the categories and subcategories according to those created in the sales force. Example: men, clothes, suits
 
    */
-  cgid?: Array<string>;
+  categoryID?: Array<string>;
 
   /**
    * @title Promotion ID.
@@ -44,7 +44,7 @@ export interface Props {
    * @description Define extra refinement params to the query. DO NOT EXCEED 5 EXTRA PARAMS.
    * @max 5
    */
-  extraParams: ExtraRefineParams[];
+  extraParams: RefineParams[];
 
   /**
    * @title Sort.
@@ -78,13 +78,13 @@ export default async function loader(
   ctx: AppContext
 ): Promise<null | Omit<Product[], "isVariantOf">> {
   const url = new URL(req.url);
-  const { cgid, pmid, sort, limit, q, price } = props;
+  const { categoryID, pmid, sort, limit, q, price } = props;
 
   const token = getCookies(req.headers)[`token_${ctx.siteId}`]; 
   
   if (!token) return null;
 
-  const extraRefineParams = toExtraRefineParams(props.extraParams);
+  const refineParams = toRefineParams(props.extraParams);
   const getProductBySlug = await fetchProducts<ProductSearch>(
     paths(
       ctx
@@ -93,11 +93,11 @@ export default async function loader(
       {
         sort,
         limit,
-        refine_cgid: cgid?.join("-"),
+        refine_cgid: categoryID?.join("-"),
         refine_pmid: pmid,
         refine_htype: "master|product",
         refine_price: toPriceRange(price),
-        ...extraRefineParams,
+        ...refineParams,
       }
     ),
     token

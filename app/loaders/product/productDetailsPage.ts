@@ -37,9 +37,7 @@ export default async function loader(
         slug.replace(/-/g, " "),
         {
           limit: 1,
-          refine: {
-            htype: "master",
-          },
+          refine_htype: "master",
         }
       ),
       token

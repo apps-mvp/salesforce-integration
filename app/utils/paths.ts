@@ -138,9 +138,11 @@ export const paths = ({
                 }),
               },
               product_search: {
-                q: (query: string, extraParams?: ProductSearchParams) => {
+                q: (query?: string, extraParams?: ProductSearchParams) => {
                   return href(
-                    `/search/shopper-search/v1/organizations/${organizationId}/product-search?siteId=${siteId}&q=${query}&currency=${currency}&locale=${locale}`,
+                    `/search/shopper-search/v1/organizations/${organizationId}/product-search?siteId=${siteId}${
+                      query ? `&q=${query}` : ""
+                    }&currency=${currency}&locale=${locale}`,
                     extraParams
                   );
                 },

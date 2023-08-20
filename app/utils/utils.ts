@@ -1,4 +1,4 @@
-import { ExtraRefineParams, PricingRange } from "./types.ts";
+import { RefineParams, PricingRange } from "./types.ts";
 
 export function slugfy(url: string) {
   return url
@@ -36,7 +36,7 @@ export const stringfyParams = (params?: object): string => {
   );
 };
 
-export const toExtraRefineParams = (extraParams: ExtraRefineParams[]) => {
+export const toRefineParams = (extraParams: RefineParams[]) => {
   const result = {};
   for (const item of extraParams) {
     result[`refine_${item.key}`] = item.value;

@@ -312,7 +312,7 @@ export interface SortingOptions {
   label: string;
 }
 
-export interface ExtraRefineParams {
+export interface RefineParams {
   /**
    * @title Key id.
    * @description Declare the name of the extra prop. Example: c_refinementColor, c_tvType, etc
