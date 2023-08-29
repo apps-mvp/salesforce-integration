@@ -143,43 +143,31 @@ export interface PDPParams {
 
 export interface ProductSearchParams {
   /**
-   * @title Filters
-   * @description The filters can be a collection of custom defined attributes IDs and the system defined attributes IDs but the search can only accept a total of 9 refinements at a time
+   * @title Category ID
+   * @description Allows refinement per single category ID. Multiple category ids are not supported.
    */
-  refine?: {
-    /**
-     * @title Category ID
-     * @description Allows refinement per single category ID. Multiple category ids are not supported.
-     */
-    cgid?: string;
+  refine_cgid?: string;
 
-    /**
-     * @description Allows refinement per single price range. Multiple price ranges are not supported.
-     * @example (100..300)
-     */
-    price?: string;
+  /**
+   * @description Allows refinement per single price range. Multiple price ranges are not supported.
+   * @example (100..300)
+   */
+  refine_price?: string;
 
-    /**
-     * @description Allows refinement per promotion ID.
-     */
-    pmid?: string;
+  /**
+   * @description Allows refinement per promotion ID.
+   */
+  refine_pmid?: string;
 
-    /**
-     * @description Allow refinement by including only the provided hit types. Hit type - ('product', 'master', 'set', 'bundle', 'variation_group'). A | can divide them
-     */
-    htype?: string;
+  /**
+   * @description Allow refinement by including only the provided hit types. Hit type - ('product', 'master', 'set', 'bundle', 'variation_group'). A | can divide them
+   */
+  refine_htype?: string;
 
-    /**
-     * @description Unavailable products are excluded from the search results if true is set.
-     */
-    orderable_only?: boolean;
-
-    /**
-     * @description Refinement color. Multiple values are supported by a subset of refinement attributes and can be provided by separating them using a pipe (URL encoded = "|") i.e.
-     * @example red|green|blue
-     */
-    c_refinementColor?: string;
-  };
+  /**
+   * @description Unavailable products are excluded from the search results if true is set.
+   */
+  refine_orderable_only?: boolean;
 
   /**
    * @description The ID of the sorting option to sort the search hits.
@@ -322,4 +310,29 @@ export interface SuggestedTermsValues {
 export interface SortingOptions {
   id: string;
   label: string;
+}
+
+export interface RefineParams {
+  /**
+   * @title Key id.
+   * @description Declare the name of the extra prop. Example: c_refinementColor, c_tvType, etc
+   */
+  key: string;
+  /**
+   * @title Value.
+   * @description Declare the value of the prop. For multiple values, use the pipe "|". Example: Black|White
+   */
+  value: string;
+}
+export interface PricingRange {
+  /**
+   * @title Minimum value.
+   * @description Only numbers allowed.
+   */
+  minValue?: number;
+  /**
+   * @title Maximun value.
+   * @description Only numbers allowed.
+   */
+  maxValue?: number;
 }
