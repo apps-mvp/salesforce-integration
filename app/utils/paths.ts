@@ -160,7 +160,7 @@ export const paths = ({
               products: {
                 productId: (productId: string, extraParams?: PDPParams) => {
                   return href(
-                    `/product/shopper-products/v1/organizations/${organizationId}/products/${productId}?siteId=${siteId}&currency=${currency}&locale=${locale}&allImages=true`,
+                    `/product/shopper-products/v1/organizations/${organizationId}/products/${productId}?siteId=${siteId}&currency=${currency}&locale=${locale}`,
                     extraParams
                   );
                 },

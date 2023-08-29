@@ -3,20 +3,21 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $$$0 from "./loaders/bin.ts";
-import * as $$$1 from "./loaders/product/productDetailsPage.ts";
-import * as $$$2 from "./loaders/product/productList.ts";
-import { AppManifest } from "$live/types.ts";
+import * as $$$1 from "./loaders/cart.ts";
+import * as $$$2 from "./loaders/product/productDetailsPage.ts";
+import * as $$$3 from "./loaders/product/productList.ts";
 
 const manifest = {
   "loaders": {
     "salesforce-integration/loaders/bin.ts": $$$0,
-    "salesforce-integration/loaders/product/productDetailsPage.ts": $$$1,
-    "salesforce-integration/loaders/product/productList.ts": $$$2,
+    "salesforce-integration/loaders/cart.ts": $$$1,
+    "salesforce-integration/loaders/product/productDetailsPage.ts": $$$2,
+    "salesforce-integration/loaders/product/productList.ts": $$$3,
   },
+  "name": "salesforce-integration",
+  "baseUrl": import.meta.url,
 };
 
 export type Manifest = typeof manifest;
 
-export const name = "salesforce-integration";
-
-export default manifest satisfies AppManifest;
+export default manifest;
