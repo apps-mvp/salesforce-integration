@@ -64,7 +64,8 @@ export default async function loader(
     paths(
       ctx
     ).product.shopper_products.v1.organizations._organizationId.products.productId(
-      id
+      id,
+      { allImages: true }
     ),
     token
   );

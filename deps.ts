@@ -1,1 +1,1 @@
-export * from "https://denopkg.com/deco-cx/deco@1.27.0/mod.ts";
+export * from "https://denopkg.com/deco-cx/deco@1.30.9/mod.ts";

@@ -133,12 +133,13 @@ export interface PDPParams {
   /**
    * @description Retrieve the whole image model for the requested product.
    */
-  allImages?: boolean;
+  allImages: boolean;
 
   /**
    * @description Retrieve the whole pricebook prices and tiered prices (if available) for the requested product.
    */
   perPricebook?: boolean;
+  
 }
 
 export interface ProductSearchParams {
@@ -335,4 +336,89 @@ export interface PricingRange {
    * @description Only numbers allowed.
    */
   maxValue?: number;
+}
+
+export interface OrderForm {
+  adjustedMerchandizeTotalTax: number;
+  adjustedShippingTotalTax: number;
+  agentBasket: boolean;
+  basketId: string;
+  channelType: string;
+  couponItems?: CouponItems[];
+  creationDate: string;
+  currency: string;
+  customerInfo: {
+    customerId: string;
+    email: string;
+  };
+  lastModified: string;
+  locale: string;
+  merchandizeTotalTax: number;
+  orderTotal: number;
+  productItems: ProductItems[];
+  productSubTotal: number;
+  productTotal: number;
+  shipments: Shipments[];
+  shippingItems: ShippingItems[];
+  shippingTotal: number;
+  shippingTotalTax: number;
+  taxation: string;
+  taxTotal: number;
+}
+
+export interface Shipments {
+  adjustedMerchandizeTotalTax: number;
+  adjustedShippingTotalTax: number;
+  gift: boolean;
+  merchandizeTotalTax: number;
+  productSubTotal: number;
+  productTotal: number;
+  shipmentId: string;
+  shipmentTotal: number;
+  shippingStatus: string;
+  shippingTotal: number;
+  shippingTotalTax: number;
+  taxTotal: number;
+}
+
+export interface ShippingItems {
+  adjustedTax: number;
+  basePrice: number;
+  itemId: string;
+  itemText: string;
+  price: number;
+  priceAfterItemDiscount: number;
+  shipmentId: string;
+  tax: number;
+  taxBasis: number;
+  taxClassId: string;
+  taxRate: number;
+}
+
+export interface CouponItems {
+  code: string;
+  couponItemId: string;
+  statusCode: string;
+  valid: boolean;
+}
+
+export interface ProductItems {
+  adjustedTax: number;
+  basePrice: number;
+  bonusProductLineItem: boolean;
+  gift: boolean;
+  image: Images;
+  itemId: string;
+  itemText: string;
+  price: number;
+  priceAfterItemDiscount: number;
+  priceAfterOrderDiscount: number;
+  productId: string;
+  productName: string;
+  quantity: number;
+  shipmentId: string;
+  tax: number;
+  taxBasis: number;
+  taxClassId: string;
+  taxRate: number;
 }
