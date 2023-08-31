@@ -1,4 +1,7 @@
-import { RefineParams, PricingRange } from "./types.ts";
+import { RefineParams, PricingRange, Images, ProductBaseSalesforce } from "./types.ts";
+import { AppContext } from "../mod.ts";
+import { paths } from "../utils/paths.ts";
+import { fetchAPI } from "deco-sites/std/utils/fetch.ts";
 
 export function slugfy(url: string) {
   return url
@@ -57,4 +60,27 @@ export const toPriceRange = (pricingRange: PricingRange | undefined) => {
   return `(${pricingRange.minValue ? Math.floor(pricingRange.minValue) : ""}..${
     pricingRange.maxValue ? Math.floor(pricingRange.maxValue) : ""
   })`;
+};
+
+export const fetchCartImagesAPI = async (
+  ctx: AppContext,
+  productId: string,
+  token: string
+): Promise<Images> => {
+  const response = (await fetchAPI<ProductBaseSalesforce>(
+    paths(
+      ctx
+    ).product.shopper_products.v1.organizations._organizationId.products.productId(
+      productId,
+      { expand: "images", allImages: false }
+    ),
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )) as ProductBaseSalesforce;
+
+  return response.imageGroups[0].images[0];
 };

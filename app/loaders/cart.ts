@@ -1,8 +1,9 @@
-import { OrderForm, Images, ProductBaseSalesforce } from "../utils/types.ts";
+import { OrderForm } from "../utils/types.ts";
 import { AppContext } from "../mod.ts";
 import { paths } from "../utils/paths.ts";
 import { getCookies } from "std/http/mod.ts";
 import { fetchAPI } from "deco-sites/std/utils/fetch.ts";
+import { fetchCartImagesAPI } from "../utils/utils.ts";
 
 /**
  * @title Salesforce - Get Cart
@@ -35,7 +36,7 @@ export default async function loader(
         productItems: await Promise.all(
           basket.productItems.map(async (item) => ({
             ...item,
-            image: await fetchImagesAPI(ctx, item.productId, token),
+            image: await fetchCartImagesAPI(ctx, item.productId, token),
           }))
         ),
       }
@@ -46,26 +47,3 @@ export default async function loader(
     locale: ctx.locale ?? "",
   };
 }
-
-const fetchImagesAPI = async (
-  ctx: AppContext,
-  productId: string,
-  token: string
-): Promise<Images> => {
-  const response = (await fetchAPI<ProductBaseSalesforce>(
-    paths(
-      ctx
-    ).product.shopper_products.v1.organizations._organizationId.products.productId(
-      productId,
-      { expand: "images", allImages: false }
-    ),
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  )) as ProductBaseSalesforce;
-
-  return response.imageGroups[0].images[0];
-};

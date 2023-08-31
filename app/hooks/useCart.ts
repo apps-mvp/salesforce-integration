@@ -1,4 +1,4 @@
-/* import { Runtime } from "deco-sites/std/runtime.ts"; */
+import { Runtime } from "deco-sites/std/runtime.ts";
 import { OrderForm } from "../utils/types.ts";
 import { state as storeState } from "./context.ts";
 import { AnalyticsItem } from "deco-sites/std/commerce/types.ts";
@@ -37,11 +37,10 @@ const wrap =
 const state = {
   cart,
   loading,
-  /*
-  TODO: Create actions on the card 
-  updateItems: wrap(
-    Runtime.create("deco-sites/std/actions/vtex/cart/updateItems.ts"),
-  ), */
+
+  addItems: wrap(
+    Runtime.create("salesforce-integration/actions/cart/addItems.ts")
+  ),
   mapItemsToAnalyticsItems: mapOrderFormItemsToAnalyticsItems,
 };
 

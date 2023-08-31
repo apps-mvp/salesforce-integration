@@ -6,6 +6,7 @@ import * as $$$0 from "./loaders/bin.ts";
 import * as $$$1 from "./loaders/cart.ts";
 import * as $$$2 from "./loaders/product/productDetailsPage.ts";
 import * as $$$3 from "./loaders/product/productList.ts";
+import * as $$$$$$$$$0 from "./actions/cart/addItems.ts";
 
 const manifest = {
   "loaders": {
@@ -13,6 +14,9 @@ const manifest = {
     "salesforce-integration/loaders/cart.ts": $$$1,
     "salesforce-integration/loaders/product/productDetailsPage.ts": $$$2,
     "salesforce-integration/loaders/product/productList.ts": $$$3,
+  },
+  "actions": {
+    "salesforce-integration/actions/cart/addItems.ts": $$$$$$$$$0,
   },
   "name": "salesforce-integration",
   "baseUrl": import.meta.url,

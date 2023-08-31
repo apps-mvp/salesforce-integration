@@ -70,4 +70,5 @@ if (IS_BROWSER) {
 export const state = {
   ...context,
   loading,
+  enqueue
 };
